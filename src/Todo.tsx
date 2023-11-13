@@ -1,5 +1,5 @@
 // Todo.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useRef} from 'react';
 import './App.css'; // Import your custom CSS file
 
 interface Task {
@@ -13,6 +13,8 @@ const Todo: React.FC = () => {
   const [taskText, setTaskText] = useState<string>('');
   const [uncheckedCount, setUncheckedCount] = useState<number>(0);
   const [checkedCount, setCheckedCount] = useState<number>(0);
+  const [darkMode, setDarkMode] = useState<boolean>(false); 
+  const bodyRef = useRef<HTMLBodyElement>(null); 
 
   useEffect(() => {
     // Update counts whenever tasks change
@@ -59,16 +61,18 @@ const Todo: React.FC = () => {
     setTasks(updatedTasks);
   };
 
+  useEffect(() => {
+    // Add or remove 'dark-mode' class based on darkMode state
+    if (bodyRef.current) {
+      bodyRef.current.classList.toggle('dark-mode', darkMode);
+    }
+  }, [darkMode]);
+
   const uncheckAllTasks = () => {
     const updatedTasks = tasks.map((task) => ({ ...task, completed: false }));
     setTasks(updatedTasks);
   };
-  const [darkMode, setDarkMode] = useState<boolean>(false);
-
-  useEffect(() => {
-    // Add or remove 'dark-mode' class based on darkMode state
-    document.body.classList.toggle('dark-mode', darkMode);
-  }, [darkMode]);
+  
 
   return (
     <div className={`App ${darkMode ? 'dark-mode' : ''}`}>
@@ -90,7 +94,7 @@ const Todo: React.FC = () => {
         <ul>
           {tasks.map((task) => (
             <li key={task.id}>
-              <label>
+               <label>
                 <input
                   type="checkbox"
                   checked={task.completed}
@@ -105,12 +109,17 @@ const Todo: React.FC = () => {
           ))}
         </ul>
         <div>
+        
           <button onClick={deleteAllTasks}>Delete All</button>
           <button onClick={deleteCompletedTasks}>Delete Completed</button>
           <button onClick={checkAllTasks}>Check All</button>
           <button onClick={uncheckAllTasks}>Uncheck All</button>
+        
         </div>
-        <button onClick={() => setDarkMode(!darkMode)} className={darkMode ? 'dark-mode' : ''}>
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          className={darkMode ? 'dark-mode' : ''}
+        >
           {darkMode ? 'Light Mode' : 'Dark Mode'}
         </button>
       </div>
